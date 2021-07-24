@@ -10,20 +10,49 @@ class ViewController: UIViewController {
     }
     
     private func buildUI() {
-        view.addSubview(startButton)
-        startButton.translatesAutoresizingMaskIntoConstraints = false
-        startButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        startButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        view.addSubview(textRecognitionButton)
+        view.addSubview(faceDetectionButton)
+        textRecognitionButton.translatesAutoresizingMaskIntoConstraints = false
+        textRecognitionButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        textRecognitionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        faceDetectionButton.translatesAutoresizingMaskIntoConstraints = false
+        faceDetectionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        faceDetectionButton.topAnchor.constraint(equalTo: textRecognitionButton.bottomAnchor, constant: 32).isActive = true
     }
     
-    @objc private func start() {
-        VerSDK.shared.run()
+    @objc private func startTextRecognition() {
+        VerSDK.shared.textRecognition { result in
+            switch result {
+            case .success(let prediction):
+                print(prediction)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
-    let startButton: UIButton = {
+    @objc private func startFaceDetection() {
+        VerSDK.shared.faceDetection() { result in
+            switch result {
+            case .success(let prediction):
+                print(prediction)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    let textRecognitionButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Start Verification", for: .normal)
-        button.addTarget(self, action: #selector(start), for: .touchUpInside)
+        button.setTitle("Start Text Recognition", for: .normal)
+        button.addTarget(self, action: #selector(startTextRecognition), for: .touchUpInside)
+        return button
+    }()
+    
+    let faceDetectionButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Start Face Detection", for: .normal)
+        button.addTarget(self, action: #selector(startFaceDetection), for: .touchUpInside)
         return button
     }()
 }
